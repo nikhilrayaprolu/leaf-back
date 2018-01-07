@@ -73,6 +73,30 @@ app.post('/familybycommon', addFamily.getAllFamilyByCommonName);
 app.get('/getAllFamily',addFamily.getAllFamily);
 app.post('/leavesoffamily',addLeaf.getLeavesByFamily);
 app.post('/leafbyid',addLeaf.getLeaves);
+app.post('/dashboard',function (req,res) {
+    var familycount = 0;
+    var unannotated = 0;
+    var annotated = 0;
+    var diseased = 0;
+    var userleaves = 0;
+    addFamily.addFamilydata.count({},function (err,count) {
+        familycount = count;
+        addLeaf.addLeafdata.count({AnnotationComplete:false}, function (err,count) {
+            unannotated = count;
+            addLeaf.addLeafdata.count({AnnotationComplete:true},function (err, count) {
+                annotated = count;
+                addLeaf.addLeafdata.count({leafHealth:'Not Good'}, function (err, count) {
+                    diseased = count;
+                    addLeaf.addLeafdata.count({createduser:req.body.username}, function (err, count) {
+                        userleaves = count;
+                        res.send({familycount: familycount, unannotated: unannotated, annotated: annotated, diseased: diseased, userleaves: userleaves});
+                    });
+
+                });
+            });
+        });
+    });
+});
 app.use('/leaf',apiRoutes);
 //app.get('/users',addUser.findallusers);
 

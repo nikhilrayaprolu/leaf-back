@@ -22,11 +22,14 @@ var LeafSchema = new Schema({
     leafname: {type: String},
     AnnotationComplete: {type: Boolean},
     scientificName:{type: Number},
-    annotationtext:{type: String}
+    annotationtext:{type: String},
+    createduser: {type: String},
+    lastedituser: {type: String},
 });
 
 LeafSchema.plugin(autoIncrement.plugin,'LeafSchema');
 var addLeaf=mongoose.model('addLeaf',LeafSchema);
+exports.addLeafdata = mongoose.model('addLeaf',LeafSchema);
 exports.addLeaf=function(req,res){
     addFamily.getFamilyByScientificName(req.body.scientificName,function (data,err) {
         if(data.length){
@@ -42,7 +45,9 @@ exports.addLeaf=function(req,res){
                     AnnotationComplete: req.body.AnnotationComplete,
                     leafname: leafname[0].filename,
                     scientificName:data[0].id,
-                    annotationtext:req.body.annotationtext
+                    annotationtext:req.body.annotationtext,
+                    createduser: req.body.createduser,
+                    lastedituser: req.body.lastedituser
                 });
                 leaf.save(function(err){
                     if(err){
@@ -66,7 +71,9 @@ exports.addLeaf=function(req,res){
                             Disease: req.body.Disease,
                             AnnotationComplete: req.body.AnnotationComplete,
                             leafname: leafname,
-                            scientificName:data._id
+                            scientificName:data._id,
+                            createduser: req.body.createduser,
+                            lastedituser: req.body.lastedituser
                         });
                         leaf.save(function(err){
                             if(err){
@@ -86,24 +93,28 @@ exports.addLeaf=function(req,res){
 };
 
 exports.updateLeaf = function (req, res) {
-    addLeaf.findOne({_id:req.body._id},function(err,leaf){
-        pictureType = req.body.pictureType;
+    addFamily.updateFamily(req,function (err,data) {
+        addLeaf.findOne({_id:req.body._id},function(err,leaf){
+            leaf.pictureType = req.body.pictureType;
             leaf.pictureSeason = req.body.pictureSeason;
             leaf.leafHealth = req.body.leafHealth;
             leaf.Disease = req.body.Disease;
             leaf.AnnotationComplete = req.body.AnnotationComplete;
             leaf.annotationtext = req.body.annotationtext;
+            leaf.lastedituser = req.body.lastedituser;
 
-        leaf.save(function(err){
-            if(err){
-                console.log(err);
+            leaf.save(function(err){
+                if(err){
+                    console.log(err);
 
-            }else{
-                console.log('success');
-                res.sendStatus(200);
-            }
+                }else{
+                    console.log('success');
+                    res.sendStatus(200);
+                }
+            });
         });
-    });
+    })
+
 };
 exports.deleteLeaf = function (req,res) {
     addLeaf.remove({_id:req.body.id},function(err){
@@ -147,24 +158,50 @@ exports.getLeaves=function(req,res){
 };
 exports.getLeavesByFamily=function(req,res){
     if(req.body.annoted == 'Not'){
-        addLeaf.find({scientificName:req.body.id, AnnotationComplete:false},{skip:req.body.presentcount,limit:req.body.count},function (err,data) {
-            if(err){
-                console.log(err,"error1");
-                res.send(err);
-            }else {
-                res.send(data);
-            }
-        })
+        if(req.body.userglobal){
+            addLeaf.find({scientificName:req.body.id, AnnotationComplete: false,username: req.body.username}).skip(req.body.presentcount).limit(req.body.count).exec(function (err,data) {
+                if(err){
+                    console.log(err,"error1");
+                    res.send(err);
+                }else {
+                    res.send(data);
+                }
+            })
+        }
+        else {
+            addLeaf.find({scientificName:req.body.id, AnnotationComplete: false}).skip(req.body.presentcount).limit(req.body.count).exec(function (err,data) {
+                if(err){
+                    console.log(err,"error1");
+                    res.send(err);
+                }else {
+                    res.send(data);
+                }
+            })
+        }
+
+
     } else {
         console.log(req.body.presentcount,req.body.count);
-        addLeaf.find({scientificName:req.body.id}).skip(req.body.presentcount).limit(req.body.count).exec(function (err,data) {
-            if(err){
-                console.log(err,"error2");
-                res.send(err);
-            }else {
-                res.send(data);
-            }
-        })
+        if(req.body.userglobal){
+            addLeaf.find({scientificName:req.body.id, username: req.body.username}).skip(req.body.presentcount).limit(req.body.count).exec(function (err,data) {
+                if(err){
+                    console.log(err,"error1");
+                    res.send(err);
+                }else {
+                    res.send(data);
+                }
+            })
+        }
+        else {
+            addLeaf.find({scientificName:req.body.id}).skip(req.body.presentcount).limit(req.body.count).exec(function (err,data) {
+                if(err){
+                    console.log(err,"error1");
+                    res.send(err);
+                }else {
+                    res.send(data);
+                }
+            })
+        }
     }
 
 };

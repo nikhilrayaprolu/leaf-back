@@ -14,11 +14,17 @@ var familySchema = new Schema({
     leafShape: {type: String},
     leafMargin: {type: String},
     leafDivision: {type: String},
-    Description: {type: String}
+    Description: {type: String},
+    family:{type: String},
+    Utility:{type: String},
+    createduser: {type: String},
+    lastedituser: {type: String},
 });
 
 familySchema.plugin(autoIncrement.plugin,'familySchema');
+
 var addFamily=mongoose.model('addFamily',familySchema);
+exports.addFamilydata = mongoose.model('addFamily',familySchema);
 exports.addFamily=function(req,res){
     var family = new addLeaf({
         scientificName:req.body.scientificName,
@@ -27,6 +33,10 @@ exports.addFamily=function(req,res){
         leafMargin: req.body.leafMargin,
         leafDivision: req.body.leafDivision,
         Description: req.body.Description,
+        family:req.body.family,
+        Utility:req.body.Utility,
+        createduser: req.body.createduser,
+        lastedituser: req.body.lastedituser
     });
     family.save(function(err){
         if(err){
@@ -37,6 +47,31 @@ exports.addFamily=function(req,res){
         }
     })
 };
+exports.updateFamily = function (req, callback) {
+
+    addFamily.findOne({scientificName:req.body.scientificName},function(err,family){
+        leaf.scientificName = req.body.scientificName;
+        leaf.commonName = req.body.commonName;
+        leaf.leafShape = req.body.leafShape;
+        leaf.leafMargin = req.body.leafMargin;
+        leaf.leafDivision = req.body.leafDivision;
+        leaf.Description = req.body.Description;
+        leaf.family = req.body.family;
+        leaf.Utility = req.body.Utility;
+        leaf.createduser = req.body.createduser;
+        leaf.lastedituser = req.body.lastedituser;
+        leaf.save(function(err){
+            if(err){
+                callback(err,null)
+
+            }else{
+                console.log('success');
+                callback(null,null)
+            }
+        });
+    });
+};
+
 exports.getAllFamily=function(req,res){
     addFamily.find({},function (err,data) {
         if(err){
@@ -74,7 +109,12 @@ exports.addFamilyCall=function(req,callback){
         leafMargin: req.body.leafMargin,
         leafDivision: req.body.leafDivision,
         Description: req.body.Description,
-    });
+        family: req.body.family,
+        Utility: req.body.Utility,
+        createduser: req.body.createduser,
+        lastedituser: req.body.lastedituser
+
+});
     family.save(function(err,data){
         if(err){
             console.log(err);
