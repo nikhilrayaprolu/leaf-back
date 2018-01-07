@@ -53,11 +53,14 @@ exports.addLeaf=function(req,res){
                     if(err){
                         console.log(err);
                         res.send({success:false});
+                        break;
                     }else{
-                        res.send({success:true});
+
+
                     }
                 })
             }
+            res.send({success:true});
         }else {
             addFamily.addFamilyCall(req,function (err,data) {
                 if(err){
@@ -76,10 +79,10 @@ exports.addLeaf=function(req,res){
                             lastedituser: req.body.lastedituser
                         });
                         leaf.save(function(err){
-                            if(err){
+                            if(err) {
                                 console.log(err);
                                 res.send({success:false});
-                            }else{
+                            } else {
                                 res.send({success:true});
                             }
                         })
@@ -158,7 +161,7 @@ exports.getLeaves=function(req,res){
 };
 exports.getLeavesByFamily=function(req,res){
     if(req.body.annoted == 'Not'){
-        if(req.body.userglobal){
+        if(req.body.userglobal == 'User'){
             addLeaf.find({scientificName:req.body.id, AnnotationComplete: false,username: req.body.username}).skip(req.body.presentcount).limit(req.body.count).exec(function (err,data) {
                 if(err){
                     console.log(err,"error1");
@@ -182,7 +185,7 @@ exports.getLeavesByFamily=function(req,res){
 
     } else {
         console.log(req.body.presentcount,req.body.count);
-        if(req.body.userglobal){
+        if(req.body.userglobal == 'User'){
             addLeaf.find({scientificName:req.body.id, username: req.body.username}).skip(req.body.presentcount).limit(req.body.count).exec(function (err,data) {
                 if(err){
                     console.log(err,"error1");
