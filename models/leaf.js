@@ -35,8 +35,6 @@ exports.addLeaf=function(req,res){
         if(data.length){
             console.log(req.body.listofimages);
             for(let leafname of req.body.listofimages){
-                console.log(leafname);
-                console.log(leafname[0].filename, data[0].id);
                 var leaf = new addLeaf({
                     pictureType: req.body.pictureType,
                     pictureSeason: req.body.pictureSeason,
@@ -53,7 +51,6 @@ exports.addLeaf=function(req,res){
                     if(err){
                         console.log(err);
                         res.send({success:false});
-                        break;
                     }else{
 
 
@@ -73,8 +70,9 @@ exports.addLeaf=function(req,res){
                             leafHealth: req.body.leafHealth,
                             Disease: req.body.Disease,
                             AnnotationComplete: req.body.AnnotationComplete,
-                            leafname: leafname,
-                            scientificName:data._id,
+                            leafname: leafname[0].filename,
+                            scientificName:data[0].id,
+                            annotationtext:req.body.annotationtext,
                             createduser: req.body.createduser,
                             lastedituser: req.body.lastedituser
                         });
@@ -83,10 +81,11 @@ exports.addLeaf=function(req,res){
                                 console.log(err);
                                 res.send({success:false});
                             } else {
-                                res.send({success:true});
+
                             }
                         })
                     }
+                    res.send({success:true});
                 }
 
             })
