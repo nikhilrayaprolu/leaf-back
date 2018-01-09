@@ -32,8 +32,10 @@ var addLeaf=mongoose.model('addLeaf',LeafSchema);
 exports.addLeafdata = mongoose.model('addLeaf',LeafSchema);
 exports.addLeaf=function(req,res){
     addFamily.getFamilyByScientificName(req.body.scientificName,function (data,err) {
+        var oneleafid=0;
         if(data.length){
             console.log(req.body.listofimages);
+
             for(let leafname of req.body.listofimages){
                 var leaf = new addLeaf({
                     pictureType: req.body.pictureType,
@@ -47,17 +49,22 @@ exports.addLeaf=function(req,res){
                     createduser: req.body.createduser,
                     lastedituser: req.body.lastedituser
                 });
-                leaf.save(function(err){
+                leaf.save(function(err,data2){
                     if(err){
                         console.log(err);
                         res.send({success:false});
                     }else{
-
+                        oneleafid = data2._id;
+                        if(req.body.listofimages.length == 1){
+                            res.send({success:true, imageid: data[0].id, oneleafid: oneleafid});
+                        }
 
                     }
                 })
             }
-            res.send({success:true});
+            if(req.body.listofimages.length > 1){
+                res.send({success:true, imageid: data[0].id});
+            }
         }else {
             addFamily.addFamilyCall(req,function (err,data) {
                 if(err){
@@ -76,16 +83,22 @@ exports.addLeaf=function(req,res){
                             createduser: req.body.createduser,
                             lastedituser: req.body.lastedituser
                         });
-                        leaf.save(function(err){
+                        leaf.save(function(err,data2){
                             if(err) {
                                 console.log(err);
                                 res.send({success:false});
                             } else {
-
+                                oneleafid = data2._id;
+                                if(req.body.listofimages.length == 1){
+                                    res.send({success:true, imageid: data[0].id, oneleafid: oneleafid});
+                                }
                             }
                         })
                     }
-                    res.send({success:true});
+                    if(req.body.listofimages.length > 1){
+                        res.send({success:true, imageid: data[0].id});
+                    }
+
                 }
 
             })
@@ -161,7 +174,7 @@ exports.getLeaves=function(req,res){
 exports.getLeavesByFamily=function(req,res){
     if(req.body.annoted == 'Not'){
         if(req.body.userglobal == 'User'){
-            addLeaf.find({scientificName:req.body.id, AnnotationComplete: false,username: req.body.username}).skip(req.body.presentcount).limit(req.body.count).exec(function (err,data) {
+            addLeaf.find({scientificName:req.body.id, AnnotationComplete: false,createduser: req.body.username}).skip(req.body.presentcount).limit(req.body.count).exec(function (err,data) {
                 if(err){
                     console.log(err,"error1");
                     res.send(err);
@@ -185,7 +198,7 @@ exports.getLeavesByFamily=function(req,res){
     } else {
         console.log(req.body.presentcount,req.body.count);
         if(req.body.userglobal == 'User'){
-            addLeaf.find({scientificName:req.body.id, username: req.body.username}).skip(req.body.presentcount).limit(req.body.count).exec(function (err,data) {
+            addLeaf.find({scientificName:req.body.id, createduser: req.body.username}).skip(req.body.presentcount).limit(req.body.count).exec(function (err,data) {
                 if(err){
                     console.log(err,"error1");
                     res.send(err);
