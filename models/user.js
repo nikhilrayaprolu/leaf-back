@@ -21,7 +21,6 @@ var UserSchema = new Schema({
     FirstName:{
         type:String
     },
-
     LastName:String,
 });
 UserSchema.plugin(autoIncrement.plugin,'UserSchema');

@@ -13,6 +13,7 @@ var jwt = require('jwt-simple');
 var addUser = require("./models/user");
 var addLeaf = require("./models/leaf");
 var addFamily = require("./models/family");
+var imgProc = require('./models/imgproc');
 var app = express();
 
 app.use(passport.initialize());
@@ -73,6 +74,8 @@ app.post('/familybycommon', addFamily.getAllFamilyByCommonName);
 app.get('/getAllFamily',addFamily.getAllFamily);
 app.post('/leavesoffamily',addLeaf.getLeavesByFamily);
 app.post('/leafbyid',addLeaf.getLeaves);
+app.post('/annotationupdate', addLeaf.annotationupdate);
+app.post('/updatefamily', addFamily.addFamily);
 app.post('/dashboard',function (req,res) {
     var familycount = 0;
     var unannotated = 0;
@@ -105,8 +108,8 @@ app.get('/api', function (req, res) {
 });
 
 app.post('/api',uploads.array('file',12), function (req, res) {
+    imgProc.convertImgs(req.files);
 
-    console.log(req);
     res.send(req.files);
 
 });

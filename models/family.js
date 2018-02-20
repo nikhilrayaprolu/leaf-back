@@ -26,7 +26,7 @@ familySchema.plugin(autoIncrement.plugin,'familySchema');
 var addFamily=mongoose.model('addFamily',familySchema);
 exports.addFamilydata = mongoose.model('addFamily',familySchema);
 exports.addFamily=function(req,res){
-    var family = new addLeaf({
+    var family = new addFamily({
         scientificName:req.body.scientificName,
         commonName: req.body.commonName,
         leafShape: req.body.leafShape,
@@ -50,17 +50,17 @@ exports.addFamily=function(req,res){
 exports.updateFamily = function (req, callback) {
 
     addFamily.findOne({scientificName:req.body.scientificName},function(err,family){
-        leaf.scientificName = req.body.scientificName;
-        leaf.commonName = req.body.commonName;
-        leaf.leafShape = req.body.leafShape;
-        leaf.leafMargin = req.body.leafMargin;
-        leaf.leafDivision = req.body.leafDivision;
-        leaf.Description = req.body.Description;
-        leaf.family = req.body.family;
-        leaf.Utility = req.body.Utility;
-        leaf.createduser = req.body.createduser;
-        leaf.lastedituser = req.body.lastedituser;
-        leaf.save(function(err){
+        family.scientificName = req.body.scientificName;
+        family.commonName = req.body.commonName;
+        family.leafShape = req.body.leafShape;
+        family.leafMargin = req.body.leafMargin;
+        family.leafDivision = req.body.leafDivision;
+        family.Description = req.body.Description;
+        family.family = req.body.family;
+        family.Utility = req.body.Utility;
+        family.createduser = req.body.createduser;
+        family.lastedituser = req.body.lastedituser;
+        family.save(function(err){
             if(err){
                 callback(err,null)
 
@@ -73,13 +73,25 @@ exports.updateFamily = function (req, callback) {
 };
 
 exports.getAllFamily=function(req,res){
-    addFamily.find({},function (err,data) {
+    addFamily.aggregate([
+        {
+            "$lookup":
+                {
+                    "from": "addleafs",
+                    "localField": "_id",
+                    "foreignField": "scientificName",
+                    "as": "leaves"
+                }
+        }
+    ], function (err,data) {
         if(err){
             res.send(err);
-        }else {
+        } else {
             res.send(data);
+            console.log(data);
         }
-    })
+    });
+
 };
 
 exports.getFamily=function(req,res){

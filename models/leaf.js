@@ -9,14 +9,13 @@ autoIncrement.initialize(connection);
 var bcrypt = require('bcrypt');
 var addFamily = require("./family");
 var LeafSchema = new Schema({
-    scientificName:{type: String},
     commonName: {type: String},
     pictureType: {type: String},
     leafShape: {type: String},
     leafMargin: {type: String},
     leafDivision: {type: String},
     pictureSeason: {type: String},
-    leafHealth: {type: Boolean},
+    leafHealth: {type: String},
     Disease: {type: String},
     Description: {type: String},
     leafname: {type: String},
@@ -25,6 +24,7 @@ var LeafSchema = new Schema({
     annotationtext:{type: String},
     createduser: {type: String},
     lastedituser: {type: String},
+    TaggingComplete: {type: Boolean},
 });
 
 LeafSchema.plugin(autoIncrement.plugin,'LeafSchema');
@@ -45,6 +45,7 @@ exports.addLeaf=function(req,res){
                     AnnotationComplete: req.body.AnnotationComplete,
                     leafname: leafname[0].filename,
                     scientificName:data[0].id,
+                    TaggingComplete:req.body.TaggingComplete,
                     annotationtext:req.body.annotationtext,
                     createduser: req.body.createduser,
                     lastedituser: req.body.lastedituser
@@ -78,7 +79,7 @@ exports.addLeaf=function(req,res){
                             Disease: req.body.Disease,
                             AnnotationComplete: req.body.AnnotationComplete,
                             leafname: leafname[0].filename,
-                            scientificName:data[0].id,
+                            scientificName:data.id,
                             annotationtext:req.body.annotationtext,
                             createduser: req.body.createduser,
                             lastedituser: req.body.lastedituser
@@ -90,7 +91,7 @@ exports.addLeaf=function(req,res){
                             } else {
                                 oneleafid = data2._id;
                                 if(req.body.listofimages.length == 1){
-                                    res.send({success:true, imageid: data[0].id, oneleafid: oneleafid});
+                                    res.send({success:true, imageid: data.id, oneleafid: oneleafid});
                                 }
                             }
                         })
@@ -124,13 +125,26 @@ exports.updateLeaf = function (req, res) {
 
                 }else{
                     console.log('success');
-                    res.sendStatus(200);
+                    res.send({'success': true});
                 }
             });
         });
     })
 
 };
+exports.annotationupdate = function (req,res) {
+    addLeaf.findOne({_id: req.body.leafid},function (err, leaf) {
+        leaf.annotationtext = req.body.annotationvalue;
+        leaf.AnnotationComplete = true;
+        leaf.save(function (err) {
+            if(err) {
+                console.log(err);
+            } else {
+                res.send({'success': true});
+            }
+        })
+    })
+}
 exports.deleteLeaf = function (req,res) {
     addLeaf.remove({_id:req.body.id},function(err){
         if(!err){
@@ -161,9 +175,9 @@ exports.getLeaves=function(req,res){
                 var output = {};
                 //console.log(data);
                 //console.log(data2);
-                output = jsonConcat(output, data2.toJSON());
-                //console.log(output);
                 output = jsonConcat(output, data.toJSON());
+                //console.log(output);
+                output = jsonConcat(output, data2.toJSON());
                 output._id = req.body.id;
                 //console.log(output);
                 res.send(output);
@@ -172,52 +186,34 @@ exports.getLeaves=function(req,res){
     })
 };
 exports.getLeavesByFamily=function(req,res){
-    if(req.body.annoted == 'Not'){
-        if(req.body.userglobal == 'User'){
-            addLeaf.find({scientificName:req.body.id, AnnotationComplete: false,createduser: req.body.username}).skip(req.body.presentcount).limit(req.body.count).exec(function (err,data) {
-                if(err){
-                    console.log(err,"error1");
-                    res.send(err);
-                }else {
-                    res.send(data);
-                }
-            })
-        }
-        else {
-            addLeaf.find({scientificName:req.body.id, AnnotationComplete: false}).skip(req.body.presentcount).limit(req.body.count).exec(function (err,data) {
-                if(err){
-                    console.log(err,"error1");
-                    res.send(err);
-                }else {
-                    res.send(data);
-                }
-            })
-        }
-
-
-    } else {
-        console.log(req.body.presentcount,req.body.count);
-        if(req.body.userglobal == 'User'){
-            addLeaf.find({scientificName:req.body.id, createduser: req.body.username}).skip(req.body.presentcount).limit(req.body.count).exec(function (err,data) {
-                if(err){
-                    console.log(err,"error1");
-                    res.send(err);
-                }else {
-                    res.send(data);
-                }
-            })
-        }
-        else {
-            addLeaf.find({scientificName:req.body.id}).skip(req.body.presentcount).limit(req.body.count).exec(function (err,data) {
-                if(err){
-                    console.log(err,"error1");
-                    res.send(err);
-                }else {
-                    res.send(data);
-                }
-            })
-        }
+    var searchparams = {
+        scientificName: req.body.id,
     }
+    if(req.body.level != "All"){
+        searchparams.pictureType = req.body.level;
+    }
+    if(req.body.annotation != "All"){
+        searchparams.AnnotationComplete = (req.body.annotation == 'true');
+    }
+    if(req.body.disease != "All"){
+        searchparams.Disease = req.body.disease;
+    }
+    if(req.body.tagging != "All"){
+        searchparams.TaggingComplete = (req.body.tagging == 'true');
+    }
+    if (req.body.userglobal == 'User') {
+        searchparams.createduser = req.body.username;
+    }
+    console.log(searchparams, req.body.presentcount, req.body.count);
+    addLeaf.find(searchparams).skip(req.body.presentcount).limit(req.body.count).exec(function (err,data) {
+        if(err){
+            console.log(err,"error1");
+            res.send(err);
+        }else {
+            console.log(data);
+            res.send(data);
+        }
+    })
 
 };
 
