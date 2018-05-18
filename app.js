@@ -109,9 +109,7 @@ app.get('/api', function (req, res) {
 
 app.post('/api',uploads.array('file',12), function (req, res) {
     imgProc.convertImgs(req.files);
-
     res.send(req.files);
-
 });
 
 console.log('started the server at localhost:'+port);

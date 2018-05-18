@@ -36,7 +36,7 @@ exports.addLeaf=function(req,res){
         if(data.length){
             console.log(req.body.listofimages);
 
-            for(let leafname of req.body.listofimages){
+            for(leafname of req.body.listofimages){
                 var leaf = new addLeaf({
                     pictureType: req.body.pictureType,
                     pictureSeason: req.body.pictureSeason,
@@ -71,7 +71,7 @@ exports.addLeaf=function(req,res){
                 if(err){
                     res.send(err);
                 }else{
-                    for(leafname in req.body.listofimages){
+                    for(let leafname in req.body.listofimages){
                         var leaf = new addLeaf({
                             pictureType: req.body.pictureType,
                             pictureSeason: req.body.pictureSeason,
@@ -97,7 +97,7 @@ exports.addLeaf=function(req,res){
                         })
                     }
                     if(req.body.listofimages.length > 1){
-                        res.send({success:true, imageid: data[0].id});
+                        res.send({success:true, imageid: data.id});
                     }
 
                 }
