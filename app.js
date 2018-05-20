@@ -22,7 +22,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 //app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, 'uploads')));
+app.use(express.static(path.join(__dirname, 'public')));
 mongoose.connect(config.database);
 require('./config/passport')(passport);
 var server = require('http').Server(app).listen(port);
@@ -38,7 +38,7 @@ app.use(function(err, req, res, next) {
 });
 var multer = require('multer');
 var fs = require('fs');
-var DIR = './uploads/';
+var DIR = './public/uploads';
 var upload = multer({dest: DIR});
 app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:4200');
@@ -113,3 +113,4 @@ app.post('/api',uploads.array('file',12), function (req, res) {
 });
 
 console.log('started the server at localhost:'+port);
+module.exports = app;
