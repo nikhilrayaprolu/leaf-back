@@ -7,6 +7,7 @@ autoIncrement = require('mongoose-auto-increment');
 var connection = mongoose.createConnection("mongodb://localhost/leaf-nodekb");
 autoIncrement.initialize(connection);
 var bcrypt = require('bcrypt');
+var addLeaf = require("./leaf");
 
 var familySchema = new Schema({
     scientificName:{type: String},
@@ -47,30 +48,33 @@ exports.addFamily=function(req,res){
         }
     })
 };
-exports.updateFamily = function (req, callback) {
-
-    addFamily.findOne({scientificName:req.body.scientificName},function(err,family){
-        family.scientificName = req.body.scientificName;
-        family.commonName = req.body.commonName;
-        family.leafShape = req.body.leafShape;
-        family.leafMargin = req.body.leafMargin;
-        family.leafDivision = req.body.leafDivision;
-        family.Description = req.body.Description;
-        family.family = req.body.family;
-        family.Utility = req.body.Utility;
-        family.createduser = req.body.createduser;
-        family.lastedituser = req.body.lastedituser;
-        family.save(function(err){
-            if(err){
-                callback(err,null)
-
-            }else{
-                console.log('success');
-                callback(null,null)
-            }
-        });
+exports.updateFamily = function (req,res) {
+        console.log(req.body.family);
+        addFamily.findOne({_id:req.body._id},function(err,family){
+        if(err)
+            res.send(err);
+        else
+        {
+            family.scientificName = req.body.scientificName;
+            family.commonName = req.body.commonName;
+            family.leafShape = req.body.leafShape;
+            family.leafMargin = req.body.leafMargin;
+            family.leafDivision = req.body.leafDivision;
+            family.Description = req.body.Description;
+            family.family = req.body.family;
+            family.Utility = req.body.Utility;
+            family.createduser = req.body.createduser;
+            family.lastedituser = req.body.lastedituser;
+            family.save(function(err){
+                if(err){
+                    res.send(err);
+                }else{
+                    res.send('success');
+                }
+            });
+        }
     });
-};
+    }
 
 exports.getAllFamily=function(req,res){
     addFamily.aggregate([
@@ -88,7 +92,6 @@ exports.getAllFamily=function(req,res){
             res.send(err);
         } else {
             res.send(data);
-            console.log(data);
         }
     });
 
@@ -181,11 +184,19 @@ exports.getFamilyByCommonName=function(name,callback){
 };
 
 exports.removeFamily=function(req,res){
-    addCandidate.find({id:req.body.id}).remove(function(err) {
+    addFamily.remove({_id:req.body._id}, function(err) {
         if(err)
             res.send(err);
         else{
-            res.send("success");
+            if(req.body.leaves != null)
+            {
+                req.body.leaves.forEach(function(leaf){
+                    addLeaf.deleteLeafById(leaf['_id']);
+                    console.log(leaf['_id']);
+
+                });
+            }
+            res.send('success');
         }
-    })
+    });
 };
