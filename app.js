@@ -75,7 +75,8 @@ app.get('/getAllFamily',addFamily.getAllFamily);
 app.post('/leavesoffamily',addLeaf.getLeavesByFamily);
 app.post('/leafbyid',addLeaf.getLeaves);
 app.post('/annotationupdate', addLeaf.annotationupdate);
-app.post('/updatefamily', addFamily.addFamily);
+app.post('/updatefamily', addFamily.updateFamily);
+app.post('/deletefamily', addFamily.removeFamily);
 app.post('/dashboard',function (req,res) {
     var familycount = 0;
     var unannotated = 0;

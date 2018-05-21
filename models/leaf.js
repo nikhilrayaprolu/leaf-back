@@ -34,7 +34,6 @@ exports.addLeaf=function(req,res){
     addFamily.getFamilyByScientificName(req.body.scientificName,function (data,err) {
         var oneleafid=0;
         if(data.length){
-            console.log(req.body.listofimages);
 
             for(leafname of req.body.listofimages){
                 var leaf = new addLeaf({
@@ -155,6 +154,15 @@ exports.deleteLeaf = function (req,res) {
     });
 
 };
+exports.deleteLeafById = function (id) {
+    addLeaf.remove({_id:id},function(err){
+        if(!err){
+            console.log('deleted successfully');
+        }else{
+            console.log(err);
+        }
+    });
+};
 function jsonConcat(o1, o2) {
     //console.log(o1);
     for (var key in o2) {
@@ -170,7 +178,6 @@ exports.getLeaves=function(req,res){
         if(err){
             res.send(err);
         }else {
-            console.log(data);
             addFamily.getFamilyById(data.scientificName,function (err,data2) {
                 var output = {};
                 //console.log(data);
@@ -204,13 +211,11 @@ exports.getLeavesByFamily=function(req,res){
     if (req.body.userglobal == 'User') {
         searchparams.createduser = req.body.username;
     }
-    console.log(searchparams, req.body.presentcount, req.body.count);
     addLeaf.find(searchparams).skip(req.body.presentcount).limit(req.body.count).exec(function (err,data) {
         if(err){
             console.log(err,"error1");
             res.send(err);
         }else {
-            console.log(data);
             res.send(data);
         }
     })
