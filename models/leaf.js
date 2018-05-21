@@ -108,7 +108,6 @@ exports.addLeaf=function(req,res){
 };
 
 exports.updateLeaf = function (req, res) {
-    addFamily.updateFamily(req,function (err,data) {
         addLeaf.findOne({_id:req.body._id},function(err,leaf){
             leaf.pictureType = req.body.pictureType;
             leaf.pictureSeason = req.body.pictureSeason;
@@ -127,7 +126,6 @@ exports.updateLeaf = function (req, res) {
                     res.send({'success': true});
                 }
             });
-        });
     })
 
 };
