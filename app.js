@@ -38,7 +38,7 @@ app.use(function(err, req, res, next) {
 });
 var multer = require('multer');
 var fs = require('fs');
-var DIR = './public/uploads';
+var DIR = './public/uploads/';
 var upload = multer({dest: DIR});
 app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:4200');
@@ -47,7 +47,6 @@ app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Credentials', true);
     next();
 });
-
 uploads = multer({
     dest: DIR,
     rename: function (fieldname, filename) {
