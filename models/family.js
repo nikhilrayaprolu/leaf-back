@@ -87,14 +87,14 @@ exports.getAllFamily=function(req,res){
                     "as": "leaves"
                 }
         }
-    ], function (err,data) {
+    ]).sort({scientificName: 1}).exec(function (err,data) {
         if(err){
             res.send(err);
         } else {
             res.send(data);
         }
     });
-
+     
 };
 
 exports.getFamily=function(req,res){
