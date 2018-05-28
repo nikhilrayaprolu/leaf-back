@@ -18,6 +18,7 @@ var LeafSchema = new Schema({
     leafHealth: {type: String},
     Disease: {type: String},
     Description: {type: String},
+    location: {type: String},
     leafname: {type: String},
     AnnotationComplete: {type: Boolean},
     scientificName:{type: Number},
@@ -44,6 +45,7 @@ exports.addLeaf=function(req,res){
                     AnnotationComplete: req.body.AnnotationComplete,
                     leafname: leafname[0].filename,
                     scientificName:data[0].id,
+                    location: req.body.location,
                     TaggingComplete:req.body.TaggingComplete,
                     annotationtext:req.body.annotationtext,
                     createduser: req.body.createduser,
@@ -79,6 +81,7 @@ exports.addLeaf=function(req,res){
                             AnnotationComplete: req.body.AnnotationComplete,
                             leafname: leafname[0].filename,
                             scientificName:data.id,
+                            location: req.body.location,
                             annotationtext:req.body.annotationtext,
                             createduser: req.body.createduser,
                             lastedituser: req.body.lastedituser
@@ -113,6 +116,7 @@ exports.updateLeaf = function (req, res) {
             leaf.pictureSeason = req.body.pictureSeason;
             leaf.leafHealth = req.body.leafHealth;
             leaf.Disease = req.body.Disease;
+            leaf.location = req.body.location,
             leaf.AnnotationComplete = req.body.AnnotationComplete;
             leaf.annotationtext = req.body.annotationtext;
             leaf.lastedituser = req.body.lastedituser;

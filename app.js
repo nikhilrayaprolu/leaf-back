@@ -64,7 +64,11 @@ var apiRoutes =express.Router();
 
 apiRoutes.post('/signup',addUser.userSignUp);
 apiRoutes.post('/authenticate',addUser.authenticate);
+apiRoutes.post('/password', addUser.changePassword);
 app.use('/authentication', apiRoutes);
+app.post('/type', addUser.changeType);
+app.post('/approve', addUser.changeApproval);
+app.post('/allusers', addUser.getAllUsersData);
 app.post('/upload', addLeaf.addLeaf);
 app.post('/update',addLeaf.updateLeaf);
 app.post('/leafdelete',addLeaf.deleteLeaf);
