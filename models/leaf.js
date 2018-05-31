@@ -37,6 +37,7 @@ exports.addLeaf=function(req,res){
         if(data.length){
 
             for(leafname of req.body.listofimages){
+                console.log(leafname);
                 var leaf = new addLeaf({
                     pictureType: req.body.pictureType,
                     pictureSeason: req.body.pictureSeason,
@@ -73,6 +74,7 @@ exports.addLeaf=function(req,res){
                     res.send(err);
                 }else{
                     for(let leafname in req.body.listofimages){
+                        console.log(leafname);
                         var leaf = new addLeaf({
                             pictureType: req.body.pictureType,
                             pictureSeason: req.body.pictureSeason,
@@ -82,6 +84,7 @@ exports.addLeaf=function(req,res){
                             leafname: leafname[0].filename,
                             scientificName:data.id,
                             location: req.body.location,
+                            TaggingComplete:req.body.TaggingComplete,
                             annotationtext:req.body.annotationtext,
                             createduser: req.body.createduser,
                             lastedituser: req.body.lastedituser
@@ -117,6 +120,7 @@ exports.updateLeaf = function (req, res) {
             leaf.leafHealth = req.body.leafHealth;
             leaf.Disease = req.body.Disease;
             leaf.location = req.body.location,
+            leaf.TaggingComplete = req.body.TaggingComplete;
             leaf.AnnotationComplete = req.body.AnnotationComplete;
             leaf.annotationtext = req.body.annotationtext;
             leaf.lastedituser = req.body.lastedituser;
