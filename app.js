@@ -13,6 +13,7 @@ var jwt = require('jwt-simple');
 var addUser = require("./models/user");
 var addLeaf = require("./models/leaf");
 var addFamily = require("./models/family");
+var addUnknown = require("./models/unknown");
 var imgProc = require('./models/imgproc');
 var app = express();
 
@@ -72,14 +73,17 @@ app.post('/allusers', addUser.getAllUsersData);
 app.post('/upload', addLeaf.addLeaf);
 app.post('/update',addLeaf.updateLeaf);
 app.post('/leafdelete',addLeaf.deleteLeaf);
+app.post('/unknownleaf', addUnknown.addUnknown);
 app.post('/familybyscientific', addFamily.getAllFamilyByScientificName);
 app.post('/familybycommon', addFamily.getAllFamilyByCommonName);
 app.get('/getAllFamily',addFamily.getAllFamily);
+app.get('/getAllUnknown', addUnknown.getUnknown);
 app.post('/leavesoffamily',addLeaf.getLeavesByFamily);
 app.post('/leafbyid',addLeaf.getLeaves);
 app.post('/annotationupdate', addLeaf.annotationupdate);
 app.post('/updatefamily', addFamily.updateFamily);
 app.post('/deletefamily', addFamily.removeFamily);
+app.post('/deleteunknown', addUnknown.removeUnknown);
 app.post('/dashboard',function (req,res) {
     var familycount = 0;
     var unannotated = 0;

@@ -184,6 +184,7 @@ exports.getLeaves=function(req,res){
         if(err){
             res.send(err);
         }else {
+            if(data)
             addFamily.getFamilyById(data.scientificName,function (err,data2) {
                 var output = {};
                 //console.log(data);
