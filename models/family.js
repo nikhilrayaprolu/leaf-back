@@ -20,6 +20,7 @@ var familySchema = new Schema({
     Utility:{type: String},
     createduser: {type: String},
     lastedituser: {type: String},
+    timestamp: { type: Date, default: Date.now},
 });
 
 familySchema.plugin(autoIncrement.plugin,'familySchema');
