@@ -13,6 +13,7 @@ var UnknownSchema = new Schema({
     leafname: {type: String},
     createduser: {type: String},
     lastedituser: {type: String},
+    timestamp: { type: Date, default: Date.now},
 });
 UnknownSchema.plugin(autoIncrement.plugin,'UnknownSchema');
 var addUnknown=mongoose.model('addUnknown', UnknownSchema);

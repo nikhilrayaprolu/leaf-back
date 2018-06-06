@@ -23,9 +23,12 @@ var LeafSchema = new Schema({
     AnnotationComplete: {type: Boolean},
     scientificName:{type: Number},
     annotationtext:{type: String},
+    approved:{type:String},
+    approveduser:{type: String},
     createduser: {type: String},
     lastedituser: {type: String},
     TaggingComplete: {type: Boolean},
+    timestamp: { type: Date, default: Date.now},
 });
 
 LeafSchema.plugin(autoIncrement.plugin,'LeafSchema');
@@ -49,6 +52,8 @@ exports.addLeaf=function(req,res){
                     location: req.body.location,
                     TaggingComplete:req.body.TaggingComplete,
                     annotationtext:req.body.annotationtext,
+                    approved: 'false',
+                    approveduser: 'none',
                     createduser: req.body.createduser,
                     lastedituser: req.body.lastedituser
                 });
@@ -86,6 +91,8 @@ exports.addLeaf=function(req,res){
                             location: req.body.location,
                             TaggingComplete:req.body.TaggingComplete,
                             annotationtext:req.body.annotationtext,
+                            approved: 'false',
+                            approveduser: 'none',
                             createduser: req.body.createduser,
                             lastedituser: req.body.lastedituser
                         });
@@ -199,6 +206,33 @@ exports.getLeaves=function(req,res){
         }
     })
 };
+
+exports.getUnapproved = function(req,res){
+    addLeaf.find({approved: 'false'}, function(err,data){
+        if(err)
+            res.send(err);
+        else
+            res.send(data);
+    });
+}
+
+exports.approveUpload = function(req, res){
+        console.log(req.body.user);
+addLeaf.findOne({_id:req.body.id},function(err,leaf){
+            leaf.approved = 'true';
+            leaf.approveduser = req.body.user;
+            leaf.save(function(err){
+                if(err){
+                    console.log(err);
+
+                }else{
+                    console.log('success');
+                    res.send({'success': true});
+                }
+            });
+        });
+    }
+
 exports.getLeavesByFamily=function(req,res){
     var searchparams = {
         scientificName: req.body.id,

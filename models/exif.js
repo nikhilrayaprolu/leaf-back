@@ -9,6 +9,7 @@ autoIncrement.initialize(connection);
 var exifSchema = new Schema({
     leafname: {type: String},
     metadata: {type: Object},
+    timestamp: { type: Date, default: Date.now},
 });
 exifSchema.plugin(autoIncrement.plugin,'exifSchema');
 
