@@ -163,6 +163,15 @@ exports.getAllFamilyByScientificName=function(req,res){
         }
     })
 };
+exports.getAllFamilyById=function(req,res){
+    addFamily.find({_id: req.body.id}, function(err, data){
+        if(err){
+            res.send(err);
+        }else {
+            res.send(data);
+        }
+    })
+}
 exports.getAllFamilyByCommonName=function(req,res){
     addFamily.find({commonName:{ "$regex": req.body.name, "$options": "i" } },function (err,data) {
         if(err){
