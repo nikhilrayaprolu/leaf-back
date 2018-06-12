@@ -232,6 +232,22 @@ addLeaf.findOne({_id:req.body.id},function(err,leaf){
             });
         });
     }
+exports.approveBulkUpload = function(req, res){
+        console.log(req.body.user);
+        req.body.leaves.forEach(function(leaf_id){
+        addLeaf.findOne({_id:leaf_id},function(err,leaf){
+            leaf.approved = 'true';
+            leaf.approveduser = req.body.user;
+            leaf.save(function(err){
+                if(err){
+                    console.log(err);
+
+                }
+            });
+        });
+        });
+        res.send({'success': true});
+}
 
 exports.getLeavesByFamily=function(req,res){
     var searchparams = {
