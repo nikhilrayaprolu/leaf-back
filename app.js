@@ -23,13 +23,12 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-//app.use(express.static(path.join(__dirname, 'public')));
 app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:4200');
     res.setHeader('Access-Control-Allow-Methods', 'GET,POST');
     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
     res.setHeader('Access-Control-Allow-Credentials', true);
-    //req.url = req.url.slice(5);
+    req.url = req.url.slice(5);
     next();
 });
 
@@ -96,7 +95,7 @@ app.post('/dashboard',function (req,res) {
     var familycount = 0;
     var unannotated = 0;
     var annotated = 0;
-    var diseased = 0;
+    var diseased = 0;q!
     addFamily.addFamilydata.count({},function (err,count) {
         familycount = count;
         addLeaf.addLeafdata.count({AnnotationComplete:false}, function (err,count) {
