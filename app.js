@@ -96,6 +96,10 @@ app.post('/dashboard',function (req,res) {
     var unannotated = 0;
     var annotated = 0;
     var diseased = 0;
+    var leafday = 0;
+    var leafmonth = 0;
+    var leafweek = 0;
+    var leafyear = 0;
     addFamily.addFamilydata.count({},function (err,count) {
         familycount = count;
         addLeaf.addLeafdata.count({AnnotationComplete:false}, function (err,count) {
