@@ -95,7 +95,7 @@ app.post('/dashboard',function (req,res) {
     var familycount = 0;
     var unannotated = 0;
     var annotated = 0;
-    var diseased = 0;q!
+    var diseased = 0;
     addFamily.addFamilydata.count({},function (err,count) {
         familycount = count;
         addLeaf.addLeafdata.count({AnnotationComplete:false}, function (err,count) {
