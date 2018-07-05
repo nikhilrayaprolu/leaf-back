@@ -24,6 +24,15 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 //app.use(express.static(path.join(__dirname, 'public')));
+app.use(function (req, res, next) {
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:4200');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST');
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    //req.url = req.url.slice(5);
+    next();
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 mongoose.connect(config.database);
 require('./config/passport')(passport);
@@ -42,13 +51,6 @@ var multer = require('multer');
 var fs = require('fs');
 var DIR = './public/uploads/';
 var upload = multer({dest: DIR});
-app.use(function (req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:4200');
-    res.setHeader('Access-Control-Allow-Methods', 'POST');
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-    res.setHeader('Access-Control-Allow-Credentials', true);
-    next();
-});
 uploads = multer({
     dest: DIR,
     rename: function (fieldname, filename) {
@@ -95,7 +97,6 @@ app.post('/dashboard',function (req,res) {
     var unannotated = 0;
     var annotated = 0;
     var diseased = 0;
-    var userleaves = 0;
     addFamily.addFamilydata.count({},function (err,count) {
         familycount = count;
         addLeaf.addLeafdata.count({AnnotationComplete:false}, function (err,count) {
@@ -106,7 +107,21 @@ app.post('/dashboard',function (req,res) {
                     diseased = count;
                     addLeaf.addLeafdata.count({createduser:req.body.username}, function (err, count) {
                         userleaves = count;
-                        res.send({familycount: familycount, unannotated: unannotated, annotated: annotated, diseased: diseased, userleaves: userleaves});
+                        var today = new Date();
+                        var seconds = 86400000;
+                        addLeaf.addLeafdata.count({timestamp: {$gt: new Date(today - 1 * seconds)}}, function(err, count){
+                            leafday = count;
+                            addLeaf.addLeafdata.count({timestamp: {$gt: new Date(today - 7 * seconds)}}, function(err, count){
+                            leafweek = count;
+                                addLeaf.addLeafdata.count({timestamp: {$gt: new Date(today - 30 * seconds)}}, function(err, count){
+                                    leafmonth = count;
+                                    addLeaf.addLeafdata.count({timestamp: {$gt: new Date(today - 365 * seconds)}}, function(err, count){
+                                    leafyear = count;
+                                    res.send({familycount: familycount, unannotated: unannotated, annotated: annotated, diseased: diseased, userleaves: userleaves, leafday: leafday, leafweek: leafweek, leafmonth: leafmonth, leafyear: leafyear});
+                                    });
+                                });
+                            });
+                        });
                     });
 
                 });
@@ -122,8 +137,9 @@ app.get('/api', function (req, res) {
 });
 
 app.post('/api',uploads.array('file',12), function (req, res) {
-    imgProc.convertImgs(req.files);
     res.send(req.files);
+
+    //imgProc.convertImgs(req.files)
 });
 
 console.log('started the server at localhost:'+port);
