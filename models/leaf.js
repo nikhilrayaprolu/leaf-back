@@ -194,52 +194,124 @@ exports.chartdetails = function (req, res) {
   } else {
 
         if(req.body.speciesname == 'All'){
-            addLeaf.aggregate([{
-                $group : {
-                    _id : { year: { $year : "$timestamp" }, month: { $month : "$timestamp" },day: { $dayOfMonth : "$timestamp" }, type: "$"+group},
-                    count : { $sum : 1 }}
-                   },
-                /*{ $group : {
-                    _id : { year: "$_id.year", month: "$_id.month" },
-                    dailyusage: { $push: { day: "$_id.day", count: "$count" }}}
-                },
-                { $group : {
-                    _id : { year: "$_id.year" },
-                    monthlyusage: { $push: { month: "$_id.month", dailyusage: "$dailyusage" }}}
-                }*/ ],function(err, result){
-                if (err) {
-                    res.send(err)
-                } else {
-                    res.send(result)
-                }
-            })
-        } else {
-            addLeaf.aggregate([
-                {
-                    $match: {
-                        scientificName: {$eq: req.body.speciesname}
-                    }
-                },
-                {
+            if (req.body.frequency == 'Day'){
+                addLeaf.aggregate([{
                     $group : {
                         _id : { year: { $year : "$timestamp" }, month: { $month : "$timestamp" },day: { $dayOfMonth : "$timestamp" }, type: "$"+group},
                         count : { $sum : 1 }}
                 },
-                /*{ $group : {
-                    _id : { year: "$_id.year", month: "$_id.month" },
-                    dailyusage: { $push: { day: "$_id.day", count: "$count" }}}
+                    /*{ $group : {
+                        _id : { year: "$_id.year", month: "$_id.month" },
+                        dailyusage: { $push: { day: "$_id.day", count: "$count" }}}
+                    },
+                    { $group : {
+                        _id : { year: "$_id.year" },
+                        monthlyusage: { $push: { month: "$_id.month", dailyusage: "$dailyusage" }}}
+                    }*/ ],function(err, result){
+                    if (err) {
+                        res.send(err)
+                    } else {
+                        res.send(result)
+                    }
+                })
+            }
+            if (req.body.frequency == 'Month'){
+                addLeaf.aggregate([{
+                    $group : {
+                        _id : { year: { $year : "$timestamp" }, month: { $month : "$timestamp" }, type: "$"+group},
+                        count : { $sum : 1 }}
                 },
-                { $group : {
-                    _id : { year: "$_id.year" },
-                    monthlyusage: { $push: { month: "$_id.month", dailyusage: "$dailyusage" }}}
-                }*/
-                ],function(err, result){
-                if (err) {
-                    res.send(err)
-                } else {
-                    res.send(result)
-                }
-            })
+                    ],function(err, result){
+                    if (err) {
+                        res.send(err)
+                    } else {
+                        res.send(result)
+                    }
+                })
+            }
+            if (req.body.frequency == 'Year'){
+                addLeaf.aggregate([{
+                    $group : {
+                        _id : { year: { $year : "$timestamp" }, type: "$"+group},
+                        count : { $sum : 1 }}
+                },
+                    ],function(err, result){
+                    if (err) {
+                        res.send(err)
+                    } else {
+                        res.send(result)
+                    }
+                })
+            }
+
+
+        } else {
+            if (req.body.frequency == 'Day'){
+                addLeaf.aggregate([
+                    {
+                        $match: {
+                            scientificName: {$eq: req.body.speciesname}
+                        }
+                    },
+                    {
+                    $group : {
+                        _id : { year: { $year : "$timestamp" }, month: { $month : "$timestamp" },day: { $dayOfMonth : "$timestamp" }, type: "$"+group},
+                        count : { $sum : 1 }}
+                },
+                    /*{ $group : {
+                        _id : { year: "$_id.year", month: "$_id.month" },
+                        dailyusage: { $push: { day: "$_id.day", count: "$count" }}}
+                    },
+                    { $group : {
+                        _id : { year: "$_id.year" },
+                        monthlyusage: { $push: { month: "$_id.month", dailyusage: "$dailyusage" }}}
+                    }*/ ],function(err, result){
+                    if (err) {
+                        res.send(err)
+                    } else {
+                        res.send(result)
+                    }
+                })
+            }
+            if (req.body.frequency == 'Month'){
+                addLeaf.aggregate([
+                    {
+                        $match: {
+                            scientificName: {$eq: req.body.speciesname}
+                        }
+                    },
+                    {
+                    $group : {
+                        _id : { year: { $year : "$timestamp" }, month: { $month : "$timestamp" }, type: "$"+group},
+                        count : { $sum : 1 }}
+                },
+                     ],function(err, result){
+                    if (err) {
+                        res.send(err)
+                    } else {
+                        res.send(result)
+                    }
+                })
+            }
+            if (req.body.frequency == 'Year'){
+                addLeaf.aggregate([
+                    {
+                        $match: {
+                            scientificName: {$eq: req.body.speciesname}
+                        }
+                    },
+                    {
+                    $group : {
+                        _id : { year: { $year : "$timestamp" }, type: "$"+group},
+                        count : { $sum : 1 }}
+                } ],function(err, result){
+                    if (err) {
+                        res.send(err)
+                    } else {
+                        res.send(result)
+                    }
+                })
+            }
         }
 
 
