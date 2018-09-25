@@ -199,14 +199,14 @@ exports.chartdetails = function (req, res) {
                     _id : { year: { $year : "$timestamp" }, month: { $month : "$timestamp" },day: { $dayOfMonth : "$timestamp" }, type: "$"+group},
                     count : { $sum : 1 }}
                    },
-                { $group : {
+                /*{ $group : {
                     _id : { year: "$_id.year", month: "$_id.month" },
                     dailyusage: { $push: { day: "$_id.day", count: "$count" }}}
                 },
                 { $group : {
                     _id : { year: "$_id.year" },
                     monthlyusage: { $push: { month: "$_id.month", dailyusage: "$dailyusage" }}}
-                } ],function(err, result){
+                }*/ ],function(err, result){
                 if (err) {
                     res.send(err)
                 } else {
@@ -225,14 +225,14 @@ exports.chartdetails = function (req, res) {
                         _id : { year: { $year : "$timestamp" }, month: { $month : "$timestamp" },day: { $dayOfMonth : "$timestamp" }, type: "$"+group},
                         count : { $sum : 1 }}
                 },
-                { $group : {
+                /*{ $group : {
                     _id : { year: "$_id.year", month: "$_id.month" },
                     dailyusage: { $push: { day: "$_id.day", count: "$count" }}}
                 },
                 { $group : {
                     _id : { year: "$_id.year" },
                     monthlyusage: { $push: { month: "$_id.month", dailyusage: "$dailyusage" }}}
-                }
+                }*/
                 ],function(err, result){
                 if (err) {
                     res.send(err)
