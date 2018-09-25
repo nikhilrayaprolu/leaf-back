@@ -78,6 +78,7 @@ app.get('/unapproved',addLeaf.getUnapproved);
 app.post('/approveupload', addLeaf.approveUpload);
 app.post('/bulkapprove', addLeaf.approveBulkUpload);
 app.post('/leafdelete',addLeaf.deleteLeaf);
+app.post('/updatechart', addLeaf.chartdetails);
 app.post('/unknownleaf', addUnknown.addUnknown);
 app.post('/familybyscientific', addFamily.getAllFamilyByScientificName);
 app.post('/familybycommon', addFamily.getAllFamilyByCommonName);

@@ -144,6 +144,108 @@ exports.updateLeaf = function (req, res) {
     })
 
 };
+exports.chartdetails = function (req, res) {
+    if(req.body.chartformat == 'species')
+        group = 'scientificName';
+    if(req.body.chartformat == 'levels')
+        group = 'pictureType';
+    if(req.body.chartformat == 'season')
+        group = 'pictureSeason';
+    if(req.body.chartformat == 'disease')
+        group = 'Disease';
+
+    if(req.body.chart == 'pie') {
+
+        if(req.body.speciesname == 'All'){
+            addLeaf.aggregate([
+                {
+                    $group: {
+                        _id: '$' + group,  //$region is the column name in collection
+                        count: {$sum: 1}
+                    }
+                }],function(err, result){
+                if (err) {
+                    res.send(err)
+                } else {
+                    res.send(result)
+                }
+            })
+        } else {
+            console.log(req.body.speciesname)
+            addLeaf.aggregate([
+                {
+                    $match: {
+                        scientificName: {$eq: req.body.speciesname}
+                    }
+                },
+                {
+                    $group: {
+                        _id: '$' + group,  //$region is the column name in collection
+                        count: {$sum: 1}
+                    }
+                }],function(err, result){
+                if (err) {
+                    res.send(err)
+                } else {
+                    res.send(result)
+                }
+            })
+        }
+  } else {
+
+        if(req.body.speciesname == 'All'){
+            addLeaf.aggregate([{
+                $group : {
+                    _id : { year: { $year : "$timestamp" }, month: { $month : "$timestamp" },day: { $dayOfMonth : "$timestamp" }, type: "$"+group},
+                    count : { $sum : 1 }}
+                   },
+                { $group : {
+                    _id : { year: "$_id.year", month: "$_id.month" },
+                    dailyusage: { $push: { day: "$_id.day", count: "$count" }}}
+                },
+                { $group : {
+                    _id : { year: "$_id.year" },
+                    monthlyusage: { $push: { month: "$_id.month", dailyusage: "$dailyusage" }}}
+                } ],function(err, result){
+                if (err) {
+                    res.send(err)
+                } else {
+                    res.send(result)
+                }
+            })
+        } else {
+            addLeaf.aggregate([
+                {
+                    $match: {
+                        scientificName: {$eq: req.body.speciesname}
+                    }
+                },
+                {
+                    $group : {
+                        _id : { year: { $year : "$timestamp" }, month: { $month : "$timestamp" },day: { $dayOfMonth : "$timestamp" }, type: "$"+group},
+                        count : { $sum : 1 }}
+                },
+                { $group : {
+                    _id : { year: "$_id.year", month: "$_id.month" },
+                    dailyusage: { $push: { day: "$_id.day", count: "$count" }}}
+                },
+                { $group : {
+                    _id : { year: "$_id.year" },
+                    monthlyusage: { $push: { month: "$_id.month", dailyusage: "$dailyusage" }}}
+                }
+                ],function(err, result){
+                if (err) {
+                    res.send(err)
+                } else {
+                    res.send(result)
+                }
+            })
+        }
+
+
+
+    }
+};
 exports.annotationupdate = function (req,res) {
     addLeaf.findOne({_id: req.body.leafid},function (err, leaf) {
         leaf.annotationtext = req.body.annotationvalue;
